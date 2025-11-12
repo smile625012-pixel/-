@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可愛風格中英翻轉單字卡:完整版</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 載入 Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 設定自訂字體和可愛風格樣式 */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            /* 整體大背景：柔和的漸層 */
+            background: linear-gradient(135deg, #fce7f3 0%, #e9d5ff 100%);
+        }
+        .card-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* 1. 設置 3D 翻轉效果的容器 */
+        .card {
+            height: 350px;
+            box-shadow: 0 8px 0 #F8BBD0, 0 15px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #FBCFE8;
+            border-radius: 2rem;
+            background-color: transparent;
+            perspective: 1000px;
+            padding: 0;
+        }
+
+        /* 2. 卡片內層：進行翻轉的元素 */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); /* 加入貝茲曲線讓翻轉更生動 */
+            transform-style: preserve-3d;
+        }
+
+        /* 翻轉狀態 */
+        .card.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* 3. 卡片正反面共同樣式 */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* 隱藏未翻轉那一面 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1.75rem;
+            padding: 1.5rem;
+            color: #4C1D95;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊時的高亮藍框 */
+        }
+
+        .card-face p {
+            white-space: pre-wrap;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 4. 正面（英文）樣式 */
+        .card-front {
+            background-color: #FFFFFF;
+            z-index: 2;
+        }
+ 
+        /* 5. 背面（中文）樣式 - 藍色背景 */
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #BBDEFB;
+            color: #1e3a8a;
+        }
+
+        /* 字體大小設定 */
+        .card-text-jumbo {
+            font-size: 8rem; /* 字母卡超大字體 */
+            line-height: 1;
+            font-weight: 800;
+            color: #db2777;
+        }
+        @media (min-width: 640px) {
+            .card-text-jumbo { font-size: 10rem; }
+        }
+
+        .card-text-normal {
+             font-size: 3rem; /* 一般單字卡字體 */
+             line-height: 1.2;
+             font-weight: 800;
+        }
+        @media (min-width: 640px) {
+            .card-text-normal { font-size: 3.5rem; }
+        }
+
+        /* 新增：短句字體 (介於單字與長句之間，適用於第13頁) */
+        .card-text-phrase {
+             font-size: 2rem;
+             line-height: 1.3;
+             font-weight: 700;
+        }
+        @media (min-width: 640px) {
+            .card-text-phrase { font-size: 2.4rem; }
+        }
+
+        .card-text-sentence {
+             font-size: 1.5rem; /* 長句字體 */
+             line-height: 1.4;
+             font-weight: 700;
+        }
+        @media (min-width: 640px) {
+            .card-text-sentence { font-size: 1.75rem; }
+        }
+
+        /* 按鈕基礎樣式 - 修改為更立體的風格 */
+        .btn {
+            @apply px-4 py-3 font-extrabold rounded-2xl transition-all duration-150 transform flex items-center justify-center text-sm md:text-base select-none relative overflow-hidden;
+        }
+        
+        .btn:active:not(:disabled) {
+             transform: translateY(4px) !important; /* 按下時往下沉 */
+             box-shadow: none !important; /* 按下時陰影消失 */
+        }
+
+        /* 輔助按鈕 (灰色系/紫色系) */
+        .btn-secondary {
+            @apply bg-white text-purple-700 border-2 border-purple-300;
+            box-shadow: 0 4px 0 #d8b4fe; /* 硬陰影 */
+        }
+
+        /* --- 特製按鈕樣式開始 --- */
+        
+        /* 朗讀按鈕：藍綠色 + 點點背景圖 */
+        .btn-audio {
+            background-color: #2dd4bf; /* teal-400 底色 */
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0);
+            background-size: 10px 10px;
+            color: white;
+            border: 2px solid #0d9488; /* teal-600 深色邊框 */
+            box-shadow: 0 4px 0 #0f766e; /* teal-700 硬陰影 */
+        }
+        /* 翻轉按鈕：粉紅色 + 斜線背景圖 */
+        .btn-flip {
+            background-color: #f472b6; /* pink-400 底色 */
+            background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2) 10px, transparent 10px, transparent 20px);
+            color: white;
+            border: 2px solid #db2777; /* pink-600 深色邊框 */
+            box-shadow: 0 4px 0 #be185d; /* pink-700 硬陰影 */
+        }
+        /* A-Z 朗讀按鈕 (黃色) */
+        .btn-yellow {
+             @apply bg-yellow-400 text-yellow-900 border-2 border-yellow-600;
+             box-shadow: 0 4px 0 #ca8a04;
+        }
+        /* A-Z 停止按鈕 (紅色) */
+        .btn-red {
+            @apply bg-red-400 text-white border-2 border-red-600;
+            box-shadow: 0 4px 0 #b91c1c;
+        }
+
+        /* --- 特製按鈕樣式結束 --- */
+
+        /* 禁用狀態 */
+        .btn:disabled {
+            @apply opacity-50 cursor-not-allowed transform-none !important;
+            box-shadow: none !important;
+            background-image: none !important; /* 禁用時移除背景圖 */
+            background-color: #e5e7eb !important;
+            color: #9ca3af !important;
+            border-color: #d1d5db !important;
+        }
+
+        /* 例句生成區塊 */
+        /* .gemini-box {
+            border: 3px dashed #c4b5fd;
+            background-color: #f3e8ff;
+            border-radius: 1.5rem;
+        } */
+
+        /* 導覽箭頭 */
+        .arrow-btn {
+            @apply bg-white/70 text-purple-600 rounded-full p-1 sm:p-2 backdrop-blur-md shadow-lg border-2 border-white/50 transition-all duration-200 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed;
+        }
+        @media (hover: hover) {
+             .arrow-btn:hover { @apply bg-white scale-110; }
+        }
+
+        /* 下拉選單樣式優化 */
+        #pageDropdownContent {
+             max-height: 60vh;
+             scrollbar-width: thin;
+             scrollbar-color: #d8b4fe #f3e8ff;
+        }
+        #pageDropdownContent::-webkit-scrollbar { width: 8px; }
+        #pageDropdownContent::-webkit-scrollbar-track { background: #f3e8ff; border-radius: 10px; }
+        #pageDropdownContent::-webkit-scrollbar-thumb { background-color: #d8b4fe; border-radius: 10px; border: 2px solid #f3e8ff; }
+
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="card-container flex flex-col items-center">
+        <!-- 標題區塊 -->
+        <div class="w-full pt-4 mb-6">
+            <h1 class="text-center text-2xl md:text-3xl font-black text-purple-800 tracking-tight mb-1 drop-shadow-sm">
+                屏東縣社皮國小<br class="sm:hidden">英語學習護照
+            </h1>
+            <!-- 編者資訊 -->
+            <div class="flex justify-end mt-1">
+                <div class="inline-block bg-pink-100 text-pink-800 text-sm px-3 py-1 rounded-full font-bold mr-1">
+                    Alice 張雅燕老師編製
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁面選擇區塊 -->
+        <div class="w-full relative mb-6 z-30">
+             <button id="pageDropdownButton" type="button"
+                    class="w-full flex justify-between items-center px-4 py-3 text-lg font-bold text-purple-800 bg-white border-4 border-purple-200 rounded-2xl shadow-sm active:bg-purple-50 transition-colors">
+                <span id="selectedPageText" class="truncate mr-2">
+                    <i data-lucide="book-open" class="inline-block w-5 h-5 mr-1 -mt-1 text-purple-500"></i>
+                    Page 1: 獎勵辦法
+                </span>
+                <i data-lucide="chevron-down" id="dropdownArrow" class="w-6 h-6 text-purple-400 transition-transform duration-300"></i>
+            </button>
+
+            <!-- 下拉選單內容 -->
+            <div id="pageDropdownContent" class="absolute w-full mt-2 bg-white border-4 border-purple-200 rounded-2xl shadow-xl hidden overflow-y-auto z-40">
+                <div class="py-2" id="dropdownList">
+                    <!-- JS 將在此填充選項 -->
+                </div>
+            </div>
+             <!-- 點擊外部關閉選單用的遮罩 -->
+            <div id="dropdownOverlay" class="fixed inset-0 z-20 hidden"></div>
+        </div>
+
+        <!-- 單字卡與導覽箭頭容器 -->
+        <div class="w-full relative flex justify-center items-center mb-6 md:mb-8">
+            <!-- 上一張 (修正定位：top-1/2 -translate-y-1/2 確保垂直置中，並調整水平位移) -->
+            <button id="card-prev-button" class="arrow-btn absolute left-0 z-20 top-1/2 -translate-y-1/2 -translate-x-6 md:-translate-x-12" aria-label="Previous Card">
+                <i data-lucide="chevron-left" class="w-8 h-8 md:w-10 md:h-10"></i>
+            </button>
+
+            <!-- 單字卡 -->
+            <div id="flashcard" class="card w-full max-w-sm md:max-w-full mx-auto">
+                <div id="card-inner" class="card-inner">
+                    <!-- 正面 (英文) -->
+                    <div class="card-face card-front">
+                        <p id="english-text" class="card-text-normal text-center break-words max-w-full">Loading...</p>
+                    </div>
+                    <!-- 背面 (中文) -->
+                    <div class="card-face card-back">
+                        <p id="chinese-text" class="card-text-normal font-bold text-center break-words max-w-full">載入中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下一張 (修正定位：top-1/2 -translate-y-1/2 確保垂直置中，並修正水平位移方向) -->
+            <button id="card-next-button" class="arrow-btn absolute right-0 z-20 top-1/2 -translate-y-1/2 translate-x-6 md:translate-x-12" aria-label="Next Card">
+                <i data-lucide="chevron-right" class="w-8 h-8 md:w-10 md:h-10"></i>
+            </button>
+        </div>
+
+        <!-- 控制按鈕區 (加入 ID 以便在 A-Z 頁面控制佈局) -->
+        <div id="std-control-grid" class="grid grid-cols-2 gap-4 md:gap-5 mb-6 w-full max-w-sm md:max-w-full mx-auto px-1 transition-all duration-300">
+            <button id="speak-btn" class="btn btn-audio">
+                <i data-lucide="volume-2" class="w-6 h-6 mr-2"></i>
+                <span class="text-lg">朗讀單字</span>
+            </button>
+            <button id="flip-btn" class="btn btn-flip">
+                <i data-lucide="rotate-3d" class="w-6 h-6 mr-2"></i>
+                <span class="text-lg">翻轉卡片</span>
+            </button>
+        </div>
+
+        <!-- 字母朗讀控制區 (僅在 Page 4 顯示) -->
+        <div id="alphabet-btn-container" class="w-full mb-6 hidden fade-in px-1">
+            <!-- 開始按鈕 -->
+            <button id="alphabet-start-btn" class="btn btn-yellow w-full">
+                <i data-lucide="play" class="w-5 h-5 mr-2"></i>
+                朗讀 A-Z 字母
+            </button>
+            <!-- 播放中控制項 (初始隱藏) -->
+            <div id="alphabet-controls" class="hidden w-full flex space-x-3">
+                <button id="alphabet-pause-btn" class="btn btn-yellow flex-1">
+                    <i data-lucide="pause" class="w-5 h-5 mr-2"></i>
+                    <span id="pause-btn-text">暫停</span>
+                </button>
+                <button id="alphabet-stop-btn" class="btn btn-red flex-none px-4" aria-label="停止">
+                    <i data-lucide="square" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- AI 例句區塊 (使用本地模板) -->
+        <div style="font-family:sans-serif; width: 100%; max-w-sm md:max-w-full; margin-bottom: 2rem; padding: 0 4px;">
+            <button id="ai-sentence-btn" class="btn btn-secondary w-full bg-white">
+                <i data-lucide="wand-2" class="w-4 h-4 mr-2"></i>
+                AI 造句
+            </button>
+            <p id="sentenceBox" class="text-center" style="margin-top:10px; font-size:16px; md:font-size:18px; color:#333; min-height: 60px; background: #f3e8ff; border: 3px dashed #c4b5fd; border-radius: 1.5rem; padding: 12px; display: flex; align-items: center; justify-content: center;">
+                <!-- JS 會填入例句 -->
+            </p>
+        </div>
+
+
+    </div>
+
+    <script>
+        // 初始化 Lucide 圖標
+        lucide.createIcons();
+
+        // =========================================
+        // 1. 完整單字資料庫 (Page 1 - 39)
+        // =========================================
+        const flashcards = [
+            // Page 1-3: 說明頁
+            { en: "英語學習護照", zh: "英語學習護照\n(獎勵辦法)", page: 1, topic: "獎勵辦法", noTts: true, noGemini: true },
+            { en: "Welcome!", zh: "編者的話 (一)：\n\n歡迎使用！請點擊上方選單\n選擇 Page 4 開始學習。", page: 2, topic: "編者的話", noTts: true, noGemini: true },
+            { en: "Let's Go!", zh: "編者的話 (二)：\n\n準備好了嗎？\n讓我們開始學習吧！", page: 3, topic: "編者的話", noTts: true, noGemini: true },
+            // Page 4: A-Z Review
+            { en: "A to Z", zh: "字母 A 到 Z 總複習", page: 4, topic: "字母總覽", isAlphabetReview: true, noGemini: true, noTts: true },
+            // Page 5-12: Letters
+            { en: "A", tts_en: "A", zh: "a", page: 5, topic: "字母 A-D", isLetter: true, noGemini: true },
+            { en: "B", tts_en: "B", zh: "b", page: 5, topic: "字母 A-D", isLetter: true, noGemini: true },
+            { en: "C", tts_en: "C", zh: "c", page: 5, topic: "字母 A-D", isLetter: true, noGemini: true },
+            { en: "D", tts_en: "D", zh: "d", page: 5, topic: "字母 A-D", isLetter: true, noGemini: true },
+            { en: "E", tts_en: "E", zh: "e", page: 6, topic: "字母 E-H", isLetter: true, noGemini: true },
+            { en: "F", tts_en: "F", zh: "f", page: 6, topic: "字母 E-H", isLetter: true, noGemini: true },
+            { en: "G", tts_en: "G", zh: "g", page: 6, topic: "字母 E-H", isLetter: true, noGemini: true },
+            { en: "H", tts_en: "H", zh: "h", page: 6, topic: "字母 E-H", isLetter: true, noGemini: true },
+            { en: "I", tts_en: "I", zh: "i", page: 7, topic: "字母 I-K", isLetter: true, noGemini: true },
+            { en: "J", tts_en: "J", zh: "j", page: 7, topic: "字母 I-K", isLetter: true, noGemini: true },
+            { en: "K", tts_en: "K", zh: "k", page: 7, topic: "字母 I-K", isLetter: true, noGemini: true },
+            { en: "L", tts_en: "L", zh: "l", page: 8, topic: "字母 L-N", isLetter: true, noGemini: true },
+            { en: "M", tts_en: "M", zh: "m", page: 8, topic: "字母 L-N", isLetter: true, noGemini: true },
+            { en: "N", tts_en: "N", zh: "n", page: 8, topic: "字母 L-N", isLetter: true, noGemini: true },
+            { en: "O", tts_en: "O", zh: "o", page: 9, topic: "字母 O-Q", isLetter: true, noGemini: true },
+            { en: "P", tts_en: "P", zh: "p", page: 9, topic: "字母 O-Q", isLetter: true, noGemini: true },
+            { en: "Q", tts_en: "Q", zh: "q", page: 9, topic: "字母 O-Q", isLetter: true, noGemini: true },
+            { en: "R", tts_en: "R", zh: "r", page: 10, topic: "字母 R-T", isLetter: true, noGemini: true },
+            { en: "S", tts_en: "S", zh: "s", page: 10, topic: "字母 R-T", isLetter: true, noGemini: true },
+            { en: "T", tts_en: "T", zh: "t", page: 10, topic: "字母 R-T", isLetter: true, noGemini: true },
+            { en: "U", tts_en: "U", zh: "u", page: 11, topic: "字母 U-W", isLetter: true, noGemini: true },
+            { en: "V", tts_en: "V", zh: "v", page: 11, topic: "字母 U-W", isLetter: true, noGemini: true },
+            { en: "W", tts_en: "W", zh: "w", page: 11, topic: "字母 U-W", isLetter: true, noGemini: true },
+            { en: "X", tts_en: "X", zh: "x", page: 12, topic: "字母 X-Z", isLetter: true, noGemini: true },
+            { en: "Y", tts_en: "Y", zh: "y", page: 12, topic: "字母 X-Z", isLetter: true, noGemini: true },
+            { en: "Z", tts_en: "Z", zh: "z", page: 12, topic: "字母 X-Z", isLetter: true, noGemini: true },
+            // Page 13: Daily Phrases
+            { en: "Good morning.", zh: "早安。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Good afternoon.", zh: "下午好。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "How are you? \nI am fine.", zh: "你好嗎？\n我很好。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Stand up.", zh: "站起來。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Sit down.", zh: "坐下。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Listen!", zh: "聽！", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Look!", zh: "看！", page: 13, topic: "問候語", isPhrase: true },
+            { en: "Thank you.", zh: "謝謝你。", page: 13, topic: "問候語", isPhrase: true },
+            { en: "You are welcome.", zh: "不客氣。", page: 13, topic: "問候語", isPhrase: true },
+            // Page 14: Family
+            { en: "father", zh: "父親", page: 14, topic: "家人" },
+            { en: "mother", zh: "母親", page: 14, topic: "家人" },
+            { en: "dad", zh: "爸爸", page: 14, topic: "家人" },
+            { en: "mom", zh: "媽媽", page: 14, topic: "家人" },
+            { en: "grandfather", zh: "祖父 / 外祖父", page: 14, topic: "家人" },
+            { en: "grandmother", zh: "祖母 / 外祖母", page: 14, topic: "家人" },
+            { en: "grandpa", zh: "爺爺 / 公公", page: 14, topic: "家人" },
+            { en: "grandma", zh: "奶奶 / 婆婆", page: 14, topic: "家人" },
+            { en: "brother", zh: "哥哥 / 弟弟", page: 14, topic: "家人" },
+            { en: "sister", zh: "姊姊 / 妹妹", page: 14, topic: "家人" },
+            // Page 15: School Supplies I (Updated)
+            { en: "book", zh: "書", page: 15, topic: "學用品 (一)" },
+            { en: "school bag", zh: "書包", page: 15, topic: "學用品 (一)" },
+            { en: "chair", zh: "椅子", page: 15, topic: "學用品 (一)" },
+            { en: "computer", zh: "電腦", page: 15, topic: "學用品 (一)" }, // Moved from P16
+            { en: "desk", zh: "書桌", page: 15, topic: "學用品 (一)" },
+            { en: "eraser", zh: "橡皮擦", page: 15, topic: "學用品 (一)" },
+            { en: "marker", zh: "麥克筆", page: 15, topic: "學用品 (一)" },
+            { en: "notebook", zh: "筆記本", page: 15, topic: "學用品 (一)" }, // New item
+            { en: "pen", zh: "原子筆", page: 15, topic: "學用品 (一)" },
+            // Page 16: School Supplies II & People (Updated)
+            { en: "pencil", zh: "鉛筆", page: 16, topic: "學用品 (二) 與人物" }, 
+            { en: "pencil box", zh: "鉛筆盒", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "ruler", zh: "尺", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "girl", zh: "女孩", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "boy", zh: "男孩", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "student", zh: "學生", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "classmate", zh: "同學", page: 16, topic: "學用品 (二) 與人物" }, // New item
+            { en: "friend", zh: "朋友", page: 16, topic: "學用品 (二) 與人物" },
+            { en: "Mr.", zh: "先生", page: 16, topic: "學用品 (二) 與人物" }, // New item
+            // teacher removed from P16
+            // Page 17: Sentence Patterns 1 (Updated)
+            { en: "What's your name? \nMy name is David.", zh: "你叫什麼名字？\n我的名字是大衛。", page: 17, topic: "句型1", isPhrase: true },
+            { en: "How are you? \nI'm fine. Thank you.", zh: "你好嗎？\n我很好。謝謝你。", page: 17, topic: "句型1", isPhrase: true },
+            { en: "Where is the cat? \nIt's on the box.", zh: "貓在哪裡？\n牠在箱子上面。", page: 17, topic: "句型1", isPhrase: true },
+            { en: "I like bananas. \nI don't like oranges.", zh: "我喜歡香蕉。\n我不喜歡柳橙。", page: 17, topic: "句型1", isPhrase: true },
+            { en: "Are you a student? \nYes, I am. \nNo, I'm not.", zh: "你是一位學生嗎？\n是的，我是。\n不，我不是。", page: 17, topic: "句型1", isPhrase: true },
+            // Page 18: Rhymes (Updated)
+            { en: "I am a girl.", zh: "我是一個女孩。", page: 18, topic: "韻文", isPhrase: true },
+            { en: "There are five people in my family.", zh: "我家有五個人。", page: 18, topic: "韻文", isPhrase: true },
+            { en: "Every morning, I take my school bag to school.", zh: "每天早上，我帶著書包去學校。", page: 18, topic: "韻文", isPhrase: true },
+            { en: "In my school bag, there is a pencil case.", zh: "我的書包裡有一個鉛筆盒。", page: 18, topic: "韻文", isPhrase: true },
+            { en: "I like to go to school.", zh: "我喜歡去學校。", page: 18, topic: "韻文", isPhrase: true },
+            // Page 19: Body Parts (Updated)
+            { en: "arm", zh: "手臂", page: 19, topic: "身體部位" },
+            { en: "ear", zh: "耳朵", page: 19, topic: "身體部位" },
+            { en: "eye", zh: "眼睛", page: 19, topic: "身體部位" },
+            { en: "feet", zh: "雙腳", page: 19, topic: "身體部位" },
+            { en: "foot", zh: "腳", page: 19, topic: "身體部位" },
+            { en: "hair", zh: "頭髮", page: 19, topic: "身體部位" },
+            { en: "hand", zh: "手", page: 19, topic: "身體部位" },
+            { en: "head", zh: "頭", page: 19, topic: "身體部位" },
+            // Page 20 (Body Parts II) - MODIFIED
+            { en: "leg", zh: "腿", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "mouth", zh: "嘴", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "nose", zh: "鼻", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            // Added 6 food items to Page 20
+            { en: "apple", zh: "蘋果", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "banana", zh: "香蕉", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "bread", zh: "麵包", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "cake", zh: "蛋糕", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "egg", zh: "蛋", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            { en: "hamburger", zh: "漢堡", page: 20, topic: "身體部位 (二) & 食物 (一)" },
+            
+            // Page 21 (Food) - UPDATED
+            { en: "hot dog", zh: "熱狗", page: 21, topic: "食物 (二)" },
+            { en: "ice cream", zh: "冰淇淋", page: 21, topic: "食物 (二)" },
+            { en: "juice", zh: "果汁", page: 21, topic: "食物 (二)" },
+            { en: "milk", zh: "牛奶", page: 21, topic: "食物 (二)" },
+            { en: "pizza", zh: "披薩", page: 21, topic: "食物 (二)" },
+            { en: "sandwich", zh: "三明治", page: 21, topic: "食物 (二)" },
+            { en: "soup", zh: "湯", page: 21, topic: "食物 (二)" },
+            { en: "tea", zh: "茶", page: 21, topic: "食物 (二)" },
+            { en: "water", zh: "水", page: 21, topic: "食物 (二)" },
+            
+            // Page 22: UPDATED
+            { en: "breakfast", zh: "早餐", page: 22, topic: "三餐&動物" },
+            { en: "dinner", zh: "晚餐", page: 22, topic: "三餐&動物" },
+            { en: "lunch", zh: "午餐", page: 22, topic: "三餐&動物" },
+            { en: "animal", zh: "動物", page: 22, topic: "三餐&動物" },
+            { en: "bear", zh: "熊", page: 22, topic: "三餐&動物" },
+            { en: "bird", zh: "鳥", page: 22, topic: "三餐&動物" },
+            { en: "cat", zh: "貓", page: 22, topic: "三餐&動物" },
+            { en: "chicken", zh: "雞", page: 22, topic: "三餐&動物" },
+            { en: "dog", zh: "狗", page: 22, topic: "三餐&動物" },
+
+            // Page 23: UPDATED
+            { en: "elephant", zh: "象", page: 23, topic: "動物 (二)" },
+            { en: "fish", zh: "魚", page: 23, topic: "動物 (二)" },
+            { en: "lion", zh: "獅子", page: 23, topic: "動物 (二)" },
+            { en: "monkey", zh: "猴子", page: 23, topic: "動物 (二)" },
+            { en: "pig", zh: "豬", page: 23, topic: "動物 (二)" },
+            { en: "rabbit", zh: "兔", page: 23, topic: "動物 (二)" },
+            { en: "snake", zh: "蛇", page: 23, topic: "動物 (二)" },
+            { en: "tiger", zh: "老虎", page: 23, topic: "動物 (二)" },
+            { en: "zoo", zh: "動物園", page: 23, topic: "動物 (二)" },
+            
+             // Page 24: Numbers (UPDATED)
+            { en: "one", zh: "一", page: 24, topic: "數字" },
+            { en: "two", zh: "二", page: 24, topic: "數字" },
+            { en: "three", zh: "三", page: 24, topic: "數字" },
+            { en: "four", zh: "四", page: 24, topic: "數字" },
+            { en: "five", zh: "五", page: 24, topic: "數字" },
+            { en: "six", zh: "六", page: 24, topic: "數字" },
+            { en: "seven", zh: "七", page: 24, topic: "數字" },
+            { en: "eight", zh: "八", page: 24, topic: "數字" },
+            { en: "nine", zh: "九", page: 24, topic: "數字" },
+            
+            // Page 25: UPDATED (was Page 26: Colors)
+            { en: "ten", zh: "十", page: 25, topic: "數字與地方" },
+            { en: "eleven", zh: "十一", page: 25, topic: "數字與地方" },
+            { en: "twelve", zh: "十二", page: 25, topic: "數字與地方" },
+            { en: "zero", zh: "零", page: 25, topic: "數字與地方" },
+            { en: "bathroom", zh: "浴室", page: 25, topic: "數字與地方" },
+            { en: "bedroom", zh: "臥房", page: 25, topic: "數字與地方" },
+            { en: "bookstore", zh: "書店", page: 25, topic: "數字與地方" },
+            { en: "classroom", zh: "教室", page: 25, topic: "數字與地方" },
+            { en: "home", zh: "家", page: 25, topic: "數字與地方" },
+
+            // Page 26: UPDATED (was Colors / Places)
+            { en: "kitchen", zh: "廚房", page: 26, topic: "地方與顏色" },
+            { en: "library", zh: "圖書館", page: 26, topic: "地方與顏色" },
+            { en: "living room", zh: "客廳", page: 26, topic: "地方與顏色" },
+            { en: "park", zh: "公園", page: 26, topic: "地方與顏色" },
+            { en: "school", zh: "學校", page: 26, topic: "地方與顏色" },
+            { en: "store", zh: "商店", page: 26, topic: "地方與顏色" },
+            { en: "supermarket", zh: "超級市場", page: 26, topic: "地方與顏色" },
+            { en: "black", zh: "黑色的", page: 26, topic: "地方與顏色" },
+            { en: "blue", zh: "藍色的", page: 26, topic: "地方與顏色" },
+
+            // Page 27: UPDATED (was Clothes)
+            { en: "brown", zh: "棕色的", page: 27, topic: "顏色" },
+            { en: "color", zh: "顏色", page: 27, topic: "顏色" },
+            { en: "green", zh: "綠色的", page: 27, topic: "顏色" },
+            { en: "orange", zh: "橙色的", page: 27, topic: "顏色" },
+            { en: "pink", zh: "粉紅色的", page: 27, topic: "顏色" },
+            { en: "purple", zh: "紫色的", page: 27, topic: "顏色" },
+            { en: "red", zh: "紅色的", page: 27, topic: "顏色" },
+            { en: "white", zh: "白色的", page: 27, topic: "顏色" },
+            { en: "yellow", zh: "黃色的", page: 27, topic: "顏色" },
+
+            // Page 28: 衣物 (NEW)
+            { en: "dress", zh: "洋裝", page: 28, topic: "衣物" },
+            { en: "hat", zh: "帽子", page: 28, topic: "衣物" },
+            { en: "jacket", zh: "夾克; 外套", page: 28, topic: "衣物" },
+            { en: "shirt", zh: "襯衫", page: 28, topic: "衣物" },
+            { en: "shoes", zh: "鞋子", page: 28, topic: "衣物" },
+            { en: "shorts", zh: "短褲", page: 28, topic: "衣物" },
+            { en: "skirt", zh: "裙子", page: 28, topic: "衣物" },
+            { en: "T-shirt", zh: "短袖運動衫, 短袖圓領T", page: 28, topic: "衣物" },
+
+            // Page 29: 形容詞 (一) (NEW)
+            { en: "bad", zh: "不好的", page: 29, topic: "形容詞 (一)" },
+            { en: "beautiful", zh: "美麗的", page: 29, topic: "形容詞 (一)" },
+            { en: "big", zh: "大的", page: 29, topic: "形容詞 (一)" },
+            { en: "clean", zh: "乾淨的", page: 29, topic: "形容詞 (一)" },
+            { en: "cloudy", zh: "多雲的", page: 29, topic: "形容詞 (一)" },
+            { en: "cold", zh: "冷的", page: 29, topic: "形容詞 (一)" },
+            { en: "cool", zh: "涼爽的", page: 29, topic: "形容詞 (一)" },
+            { en: "cute", zh: "可愛", page: 29, topic: "形容詞 (一)" },
+            { en: "fat", zh: "胖的", page: 29, topic: "形容詞 (一)" },
+            { en: "handsome", zh: "英俊的", page: 29, topic: "形容詞 (一)" },
+            { en: "hot", zh: "熱的", page: 29, topic: "形容詞 (一)" },
+
+            // Page 30: 形容詞 (二) (NEW)
+            { en: "long", zh: "長的", page: 30, topic: "形容詞 (二)" },
+            { en: "new", zh: "新的", page: 30, topic: "形容詞 (二)" },
+            { en: "nice", zh: "不錯的", page: 30, topic: "形容詞 (二)" },
+            { en: "old", zh: "舊的; 老的", page: 30, topic: "形容詞 (二)" },
+            { en: "rainy", zh: "下雨的", page: 30, topic: "形容詞 (二)" },
+            { en: "short", zh: "短的", page: 30, topic: "形容詞 (二)" },
+            { en: "small", zh: "小的", page: 30, topic: "形容詞 (二)" },
+            { en: "smart", zh: "聰明的", page: 30, topic: "形容詞 (二)" },
+            { en: "sunny", zh: "晴朗的", page: 30, topic: "形容詞 (二)" },
+            { en: "tall", zh: "高的", page: 30, topic: "形容詞 (二)" },
+            { en: "thin", zh: "瘦的", page: 30, topic: "形容詞 (二)" },
+
+            // Page 31: 形容詞與動詞 (NEW)
+            { en: "warm", zh: "溫暖的", page: 31, topic: "形容詞與動詞" },
+            { en: "windy", zh: "有風的", page: 31, topic: "形容詞與動詞" },
+            { en: "am", zh: "是", page: 31, topic: "形容詞與動詞" },
+            { en: "are", zh: "是", page: 31, topic: "形容詞與動詞" },
+            { en: "close", zh: "關", page: 31, topic: "形容詞與動詞" },
+            { en: "come", zh: "來", page: 31, topic: "形容詞與動詞" },
+            { en: "cook", zh: "煮", page: 31, topic: "形容詞與動詞" },
+            { en: "cut", zh: "切", page: 31, topic: "形容詞與動詞" },
+            { en: "dance", zh: "跳舞", page: 31, topic: "形容詞與動詞" },
+            { en: "draw", zh: "畫", page: 31, topic: "形容詞與動詞" },
+
+            // Page 32: 動詞(一)
+            { en: "drink", zh: "喝", page: 32, topic: "動詞(一)" },
+            { en: "eat", zh: "吃", page: 32, topic: "動詞(一)" },
+            { en: "fly", zh: "飛", page: 32, topic: "動詞(一)" },
+            { en: "get up", zh: "起床", page: 32, topic: "動詞(一)" },
+            { en: "go", zh: "去", page: 32, topic: "動詞(一)" },
+            { en: "has", zh: "有", page: 32, topic: "動詞(一)" },
+            { en: "have", zh: "有", page: 32, topic: "動詞(一)" },
+            { en: "help", zh: "幫忙", page: 32, topic: "動詞(一)" },
+            { en: "is", zh: "是", page: 32, topic: "動詞(一)" },
+            { en: "like", zh: "喜歡", page: 32, topic: "動詞(一)" },
+            { en: "listen", zh: "聽", page: 32, topic: "動詞(一)" },
+
+            // Page 33: 動詞(二)
+            { en: "look", zh: "看", page: 33, topic: "動詞(二)" },
+            { en: "meet", zh: "遇見", page: 33, topic: "動詞(二)" },
+            { en: "open", zh: "開", page: 33, topic: "動詞(二)" },
+            { en: "play", zh: "玩", page: 33, topic: "動詞(二)" },
+            { en: "read", zh: "閱讀", page: 33, topic: "動詞(二)" },
+            { en: "run", zh: "跑", page: 33, topic: "動詞(二)" },
+            { en: "see", zh: "看到", page: 33, topic: "動詞(二)" },
+            { en: "sing", zh: "唱", page: 33, topic: "動詞(二)" },
+            { en: "sleep", zh: "睡", page: 33, topic: "動詞(二)" },
+            { en: "study", zh: "研究", page: 33, topic: "動詞(二)" },
+            { en: "swim", zh: "游泳", page: 33, topic: "動詞(二)" },
+
+            // Page 34: 課室英語(一)
+            { en: "Good morning.", zh: "早安。", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Good afternoon.", zh: "下午好。", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "How are you?", zh: "你好嗎?", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "I am fine.", zh: "我很好。", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Stand up.", zh: "站起來。", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Sit down.", zh: "坐下。", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Listen!", zh: "聽！", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Look!", zh: "看！", page: 34, topic: "課室英語(一)", isSentence: true },
+            { en: "Thank you. \nYou are welcome.", zh: "謝謝你。 \n不客氣。", page: 34, topic: "課室英語(一)", isSentence: true },
+            
+            // Page 35: 課室英語(二）
+            { en: "Eyes on me.", zh: "老師: 眼睛看我。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Eyes on you.", zh: "學生: 眼睛看老師。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Take out your book.", zh: "老師: 拿出你的書。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Take out my book.", zh: "學生: 拿出我的書。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Open your book to page ________.", zh: "老師: 把書翻到第 ______ 頁。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Open my book.", zh: "學生: 打開我的書。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Close your book.", zh: "老師: 把書闔上。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Close my book.", zh: "學生: 把我的書闔上。", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Are you ready?", zh: "老師: 你準備好了嗎?", page: 35, topic: "課室英語(二）", isSentence: true },
+            { en: "Yes, I'm ready.", zh: "學生: 是的, 我準備好了。", page: 35, topic: "課室英語(二）", isSentence: true },
+
+            // Page 36: 課室英語(三）
+            { en: "Sorry, I'm late.", zh: "學生: 對不起, 我遲到了。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "May I come in?", zh: "學生: 我可以進教室嗎?", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "May I borrow your red pen?", zh: "學生: 我可以借用你的紅筆嗎?", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Come here!", zh: "過來這裡。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Try again.", zh: "再試一次。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Good job!", zh: "做得好!", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Sit properly.", zh: "老師: 坐好。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Sit properly.", zh: "學生: 坐好。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Quiet, please.", zh: "老師: 請安靜。", page: 36, topic: "課室英語(三）", isSentence: true },
+            
+            // Page 37: 課室英語(四）
+            { en: "Here you are.", zh: "這給你。", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "Go back to your seat.", zh: "回到你的座位。", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "Repeat after me.", zh: "跟我重複一遍。", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "Choose me, please.", zh: "請選我。", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "Stop!", zh: "停下來！", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "Show me your homework.", zh: "給我看你的作業。", page: 37, topic: "課室英語(四）", isSentence: true },
+            { en: "See you.", zh: "再見！", page: 37, topic: "課室英語(四）", isSentence: true },
+
+            // Page 38: 課室英語(五）
+            { en: "Let's count. 1, 2, 3, 4, 5.", zh: "我們一起數數看。 1.2.3.4.5。", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Put away your book.", zh: "把你的書收起來。", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Hurry up!", zh: "快一點！", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Wait, please!", zh: "請等一下！", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Stop!", zh: "停下來！", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Nice to meet you. \nNice to meet you, too.", zh: "很高興認識你。 \n我也很高興認識你。", page: 38, topic: "課室英語(五）", isSentence: true },
+            { en: "Louder, please.", zh: "請大聲一點。", page: 38, topic: "課室英語(五）", isSentence: true },
+
+            // Page 39: 節慶
+            { en: "Chinese New Year", zh: "農曆新年", page: 39, topic: "節慶" },
+            { en: "Lantern Festival", zh: "元宵節", page: 39, topic: "節慶" },
+            { en: "Dragon Boat Festival", zh: "端午節", page: 39, topic: "節慶" },
+            { en: "Moon Festival", zh: "中秋節", page: 39, topic: "節慶" },
+            { en: "Halloween", zh: "萬聖節", page: 39, topic: "節慶" },
+            { en: "Mother's Day", zh: "母親節", page: 39, topic: "節慶" },
+        ];
+
+        // =========================================
+        // 2. DOM 元素選取
+        // =========================================
+        const card = document.getElementById('flashcard');
+        const cardInner = document.getElementById('card-inner');
+        const englishText = document.getElementById('english-text');
+        const chineseText = document.getElementById('chinese-text');
+        const speakBtn = document.getElementById('speak-btn');
+        const flipBtn = document.getElementById('flip-btn');
+        const prevBtn = document.getElementById('card-prev-button');
+        const nextBtn = document.getElementById('card-next-button');
+        
+        // 頁面下拉選單
+        const dropdownButton = document.getElementById('pageDropdownButton');
+        const dropdownContent = document.getElementById('pageDropdownContent');
+        const dropdownList = document.getElementById('dropdownList');
+        const selectedPageText = document.getElementById('selectedPageText');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+        const dropdownOverlay = document.getElementById('dropdownOverlay');
+
+        // A-Z 朗讀
+        const alphabetBtnContainer = document.getElementById('alphabet-btn-container');
+        const alphabetStartBtn = document.getElementById('alphabet-start-btn');
+        const alphabetControls = document.getElementById('alphabet-controls');
+        const alphabetPauseBtn = document.getElementById('alphabet-pause-btn');
+        const alphabetStopBtn = document.getElementById('alphabet-stop-btn');
+        const stdControlGrid = document.getElementById('std-control-grid');
+        const pauseBtnText = document.getElementById('pause-btn-text');
+
+        // AI 例句
+        const sentenceBtn = document.getElementById('ai-sentence-btn');
+        const sentenceBox = document.getElementById('sentenceBox');
+        const sentenceContainer = sentenceBtn.parentElement;
+
+        // =========================================
+        // 3. 狀態變數
+        // =========================================
+        let currentPage = 1; // 目前頁碼 (例如: 1)
+        let cardsInCurrentPage = []; // 當前頁面的所有卡片
+        let currentCardIndexOnPage = 0; // 在當前頁面中的索引 (例如: 0)
+        let currentCardIndex = 0; // 在 `flashcards` 總陣列中的索引
+        let isFlipped = false;
+        let isDropdownOpen = false;
+
+        // 字母朗讀狀態
+        let isAlphabetReading = false;
+        let isAlphabetPaused = false;
+        let alphabetIndex = 0; // A-Z (0-25)
+        let alphabetUtterance = null; // 用於儲存目前的語音實例，以便暫停/停止
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+        // =========================================
+        // 4. 下拉選單相關功能
+        // =========================================
+
+        function populateDropdown() {
+            dropdownList.innerHTML = '';
+            const pages = {};
+            // 整理每一頁的資訊
+            flashcards.forEach(card => {
+                if (!pages[card.page]) {
+                    pages[card.page] = {
+                        topic: card.topic,
+                        count: 0
+                    };
+                }
+                pages[card.page].count++;
+            });
+
+            // 產生選單項目
+            Object.keys(pages).forEach(pageNumber => {
+                const pageInfo = pages[pageNumber];
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'block px-4 py-3 text-base font-bold text-purple-700 hover:bg-purple-100 transition-colors';
+                
+                // 判斷是否為目前選中的頁面
+                if (parseInt(pageNumber) === currentPage) {
+                    item.className = 'block px-4 py-3 text-base font-bold bg-purple-100 text-purple-900';
+                }
+
+                item.dataset.page = pageNumber;
+                
+                // 顯示 icon
+                const icon = pageInfo.topic.includes("字母") ? "type" : 
+                             pageInfo.topic.includes("問候語") || pageInfo.topic.includes("用語") ? "message-square" :
+                             pageInfo.topic.includes("家人") ? "users" :
+                             pageInfo.topic.includes("學用品") ? "pencil" :
+                             pageInfo.topic.includes("句型") || pageInfo.topic.includes("韻文") ? "book-open-check" :
+                             pageInfo.topic.includes("身體") ? "accessibility" :
+                             pageInfo.topic.includes("食物") ? "utensils" :
+                             pageInfo.topic.includes("動物") ? "cat" :
+                             pageInfo.topic.includes("數字") ? "hash" :
+                             pageInfo.topic.includes("地方") ? "map-pin" :
+                             pageInfo.topic.includes("顏色") ? "palette" :
+                             pageInfo.topic.includes("衣物") ? "shirt" :
+                             pageInfo.topic.includes("形容詞") ? "sparkles" :
+                             pageInfo.topic.includes("動詞") ? "run" :
+                             pageInfo.topic.includes("節慶") ? "cake" :
+                             "book-open";
+
+                item.innerHTML = `<i data-lucide="${icon}" class="inline-block w-5 h-5 mr-2 -mt-1 text-purple-400"></i> Page ${pageNumber}: ${pageInfo.topic}`;
+                
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newPage = parseInt(e.currentTarget.dataset.page);
+                    if (newPage !== currentPage) {
+                        // 如果在 A-Z 朗讀中切換頁面，則停止朗讀
+                        if (isAlphabetReading) {
+                            stopAlphabetReading();
+                        }
+                        navigateToPage(newPage);
+                    }
+                    toggleDropdown(false);
+                });
+                dropdownList.appendChild(item);
+            });
+            // 重新渲染 Lucide 圖標
+            lucide.createIcons();
+        }
+
+        function toggleDropdown(forceState) {
+            isDropdownOpen = (forceState !== undefined) ? forceState : !isDropdownOpen;
+            
+            if (isDropdownOpen) {
+                dropdownContent.classList.remove('hidden');
+                dropdownContent.classList.add('fade-in');
+                dropdownOverlay.classList.remove('hidden');
+                dropdownArrow.style.transform = 'rotate(180deg)';
+                // 滾動到目前選中的項目
+                const selectedItem = dropdownList.querySelector(`[data-page="${currentPage}"]`);
+                if (selectedItem) {
+                    selectedItem.scrollIntoView({ block: 'nearest' });
+                }
+            } else {
+                dropdownContent.classList.add('hidden');
+                dropdownContent.classList.remove('fade-in');
+                dropdownOverlay.classList.add('hidden');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // =========================================
+        // 5. 核心卡片功能
+        // =========================================
+
+        function navigateToPage(pageNumber) {
+            currentPage = pageNumber;
+            // 找到這頁的第一張卡片在總陣列中的索引
+            currentCardIndex = flashcards.findIndex(card => card.page === currentPage);
+            if (currentCardIndex === -1) {
+                console.error(`Page ${pageNumber} not found.`);
+                return;
+            }
+            // 更新當前頁面卡片陣列
+            cardsInCurrentPage = flashcards.filter(card => card.page === currentPage);
+            currentCardIndexOnPage = 0;
+            
+            updateCardContent();
+            updateDropdownSelection();
+        }
+
+        function changeCard(direction) {
+            // 1. 計算在當前頁面中的新索引
+            let newIndexOnPage = currentCardIndexOnPage + direction;
+
+            // 2. 處理頁面切換
+            if (newIndexOnPage < 0) {
+                // 往前翻，切到上一頁
+                const newPage = currentPage > 1 ? currentPage - 1 : flashcards[flashcards.length - 1].page; // 循環到最後一頁
+                navigateToPage(newPage);
+                // 切到上一頁的最後一張卡
+                currentCardIndexOnPage = cardsInCurrentPage.length - 1;
+                currentCardIndex = flashcards.findIndex(card => card.page === newPage) + currentCardIndexOnPage;
+
+            } else if (newIndexOnPage >= cardsInCurrentPage.length) {
+                // 往後翻，切到下一頁
+                const maxPage = flashcards[flashcards.length - 1].page;
+                const newPage = currentPage < maxPage ? currentPage + 1 : 1; // 循環到第一頁
+                navigateToPage(newPage);
+                // navigateToPage 已經重設 currentCardIndexOnPage = 0;
+
+            } else {
+                // 3. 僅在當前頁面內切換
+                currentCardIndexOnPage = newIndexOnPage;
+                currentCardIndex += direction;
+            }
+
+            // 4. 更新卡片內容
+            updateCardContent();
+        }
+        
+        // 🧠 主函式：自動產生小學生程度英文句子
+        async function generateSimpleSentence(word, partOfSpeech = "noun") {
+          try {
+            // 現階段先使用本地模板（小學生適用）
+            return localSentenceTemplate(word, partOfSpeech);
+          } catch (error) {
+            console.error(error);
+            return localSentenceTemplate(word, partOfSpeech);
+          }
+        }
+
+        // 📚 NEW HELPER: 處理 a/an
+        function getArticle(word) {
+            if (!word) return 'a';
+            const firstLetter = word.trim().toLowerCase().charAt(0);
+            return ['a', 'e', 'i', 'o', 'u'].includes(firstLetter) ? 'an' : 'a';
+        }
+
+        // 📚 小學生等級句型模板（修正文法與邏輯錯誤）
+        function localSentenceTemplate(word, pos) {
+          // 處理片語或句子 (例如 Good morning)
+          if (pos === 'phrase' || pos === 'sentence') {
+            return `"${word}" 是一個很棒的句子！`;
+          }
+
+          // 0. 特殊動詞處理 (修正邏輯錯誤)
+          // 這些動詞不適用 "I can ${w}" 或 "I like to ${w}" 模板
+          const specialVerbs = {
+            // Page 31
+            'am': ["I am a student.", "I am happy."],
+            'are': ["We are friends.", "They are tall."],
+            'close': ["Close the door.", "Close your book."],
+            'come': ["Come here, please.", "Come in."],
+            'cut': ["I cut the paper.", "She can cut the apple."],
+            // Page 32
+            'get up': ["I get up at 7.", "He gets up early."],
+            'has': ["He has a book.", "She has a pen."],
+            'have': ["I have a dog.", "They have a ball."],
+            'is': ["He is a boy.", "She is a girl.", "It is a cat."],
+            'like': ["I like dogs.", "She likes apples.", "He likes to read."], // 修正：加入 like
+            'listen': ["Listen to the music.", "I listen to the teacher."],
+            // Page 33
+            'look': ["Look at the cat.", "I look at the book."],
+            'meet': ["Nice to meet you.", "I meet my friend."], // 修正：加入 meet
+            'open': ["Open the book.", "I open the door."], // 修正：加入 open
+            'see': ["I see a bird.", "I see a pen.", "Can you see me?"] // 修正：加入 see
+          };
+
+          // *** 修正：移除此處多餘的程式碼 ***
+          
+          // 1. 詞性模板
+          const templates = {
+            'noun': [
+              (w) => `I have ${getArticle(w)} ${w}. (我有${getArticle(w)} ${w}。)`,
+              (w) => `I see ${getArticle(w)} ${w}. (我看到${getArticle(w)} ${w}。)`,
+              (w) => `It is ${getArticle(w)} ${w}. (它是${getArticle(w)} ${w}。)`,
+              (w) => `I like this ${w}. (我喜歡這個${w}。)`,
+              (w) => `Look at the ${w}. (看那個${w}。)`
+            ],
+            'verb': [
+              (w) => `I can ${w}. (我會${w}。)`,
+              (w) => `Let's ${w}. (我們來${w}吧。)`,
+              (w) => `I like to ${w}. (我喜歡${w}。)`
+            ],
+            'adj': [
+              // 修正：移除 "He is", "She is", "The cat is" 等不安全的模板
+              (w) => `It is ${w}. (它是${w}的。)`,
+              (w) => `Look, it is ${w}! (看，它是${w}的！)`,
+              (w) => `That is ${w}. (那是${w}的。)`,
+              (w) => `It looks ${w}. (它看起來${w}。)`,
+              (w) => `This is ${w}. (這是${w}的。)`
+            ],
+            'color': [ // Page 26, 27 專用
+              (w) => {
+                const nouns = ['hat', 'pen', 'book', 'cat', 'bag']; // 隨機名詞
+                const noun = nouns[Math.floor(Math.random() * nouns.length)];
+                return `I have ${getArticle(w)} ${w} ${noun}. (我有${getArticle(w)} ${w}的${noun}。)`;
+              },
+              (w) => `It is ${w}. (它是${w}色的。)`,
+              (w) => `My book is ${w}. (我的書是${w}色的。)`,
+              (w) => `I like ${w}. (我喜歡${w}色。)`
+            ]
+          };
+
+          // 2. 選擇模板 (如果不是特殊動詞)
+          let pool;
+          // 檢查是否為特殊動詞
+          if (pos === 'verb' && specialVerbs[word]) {
+             pool = specialVerbs[word].map(sentence => () => sentence); // 轉換為函數
+          } else if (pos === 'noun' && (word === 'black' || word === 'blue' || word === 'brown' || word === 'color' || word === 'green' || word === 'orange' || word === 'pink' || word === 'purple' || word === 'red' || word === 'white' || word === 'yellow')) {
+             pool = templates['color'];
+          } else {
+             pool = templates[pos] || templates["noun"];
+          }
+
+          // 隨機選一個 "模板函數"
+          const templateFunction = pool[Math.floor(Math.random() * pool.length)];
+          
+          // 3. 執行函數來產生句子
+          let sentence = templateFunction(word);
+
+          // 4. 讓句首保持大寫
+          sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
+          
+          // 5. 處理 Page 31 的 'warm' 和 'windy' (形容詞被誤判)
+          if (word === 'warm' || word === 'windy') {
+             const adjTemplates = templates['adj'];
+             const adjFunc = adjTemplates[Math.floor(Math.random() * adjTemplates.length)];
+             sentence = adjFunc(word).charAt(0).toUpperCase() + adjFunc(word).slice(1);
+          }
+          
+          return sentence;
+        }
+
+        // 輔助函數：從主題推斷詞性
+        function getPartOfSpeechFromTopic(topic) {
+            if (!topic) return 'noun';
+            if (topic.includes('動詞')) return 'verb';
+            if (topic.includes('形容詞')) return 'adj';
+            // 修正：Page 26/27 顏色判斷 (雖然已在 localSentenceTemplate 處理，但保留)
+            if (topic.includes('顏色')) return 'color'; 
+            if (topic.includes('句型') || topic.includes('用語') || topic.includes('韻文') || topic.includes('節慶')) return 'sentence';
+            return 'noun'; // 預設為名詞
+        }
+
+        // 🎮 按鈕觸發
+        async function onClickSentenceButton() {
+          const btn = document.getElementById('ai-sentence-btn');
+          const sentenceBox = document.getElementById('sentenceBox');
+          
+          btn.disabled = true;
+          sentenceBox.innerText = 'AI 老師思考中...';
+
+          try {
+            const currentCard = flashcards[currentCardIndex];
+            
+            // 檢查是否禁止AI
+            if (currentCard.noGemini) {
+                sentenceBox.innerText = '這個頁面沒有例句喔！';
+                btn.disabled = false;
+                return;
+            }
+
+            // 取得單字和詞性
+            // .split('\n')[0] 確保只取多行英文的第一行 (例如 "How are you?")
+            const word = (currentCard.tts_en || currentCard.en).split('\n')[0]; 
+            // 修正：Page 26/27 傳遞 'color' 詞性
+            let pos;
+            if (currentCard.page === 26 || currentCard.page === 27) {
+                pos = 'color';
+            } else {
+                pos = getPartOfSpeechFromTopic(currentCard.topic);
+            }
+            
+            // 模擬一點延遲
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const sentence = await generateSimpleSentence(word.toLowerCase(), pos);
+            sentenceBox.innerText = sentence;
+
+          } catch (error) {
+            console.error("Sentence generation error:", error);
+            sentenceBox.innerText = '喔喔，造句失敗了。';
+          } finally {
+            btn.disabled = false;
+          }
+        }
+
+        function updateCardContent() {
+            const currentCard = flashcards[currentCardIndex];
+            if (!currentCard) return;
+
+            // 1. 重置卡片翻轉狀態
+            if (isFlipped) {
+                card.classList.remove('is-flipped');
+                isFlipped = false;
+            }
+
+            // 2. 更新文字
+            englishText.textContent = currentCard.en;
+            chineseText.textContent = currentCard.zh;
+
+            // 3. 根據內容調整字體大小
+            englishText.className = 'card-text-normal text-center break-words max-w-full'; // 重置
+            chineseText.className = 'card-text-normal font-bold text-center break-words max-w-full'; // 重置
+            
+            if (currentCard.isLetter) {
+                englishText.classList.add('card-text-jumbo');
+                chineseText.classList.add('card-text-jumbo');
+            } else if (currentCard.isSentence || currentCard.en.length > 20) {
+                englishText.classList.add('card-text-sentence');
+                chineseText.classList.add('card-text-sentence');
+            } else if (currentCard.isPhrase) {
+                englishText.classList.add('card-text-phrase');
+                chineseText.classList.add('card-text-phrase');
+            }
+
+            // 4. 更新朗讀按鈕狀態
+            speakBtn.disabled = !!currentCard.noTts;
+
+            // 5. 處理 A-Z 頁面 (Page 4) 的 UI
+            if (currentCard.isAlphabetReview) {
+                alphabetBtnContainer.style.display = 'block';
+                stdControlGrid.style.display = 'none'; // 隱藏標準按鈕
+                // 如果正在朗讀，顯示控制項
+                if (isAlphabetReading) {
+                    alphabetStartBtn.style.display = 'none';
+                    alphabetControls.style.display = 'flex';
+                } else {
+                    alphabetStartBtn.style.display = 'block';
+                    alphabetControls.style.display = 'none';
+                }
+            } else {
+                alphabetBtnContainer.style.display = 'none';
+                stdControlGrid.style.display = 'grid'; // 顯示標準按鈕
+            }
+
+            // 6. 更新 AI 例句區塊
+            if (currentCard.noGemini) {
+                sentenceContainer.style.display = 'none';
+            } else {
+                sentenceContainer.style.display = 'block';
+                sentenceBox.innerText = '點擊上方按鈕造句';
+                sentenceBtn.disabled = false;
+            }
+
+            // 7. 修正翻轉按鈕邏輯
+            flipBtn.disabled = isAlphabetReading; // 僅在A-Z朗讀播放中禁用
+        }
+
+        function updateDropdownSelection() {
+            const currentCard = flashcards[currentCardIndex];
+            selectedPageText.innerHTML = `<i data-lucide="book-open" class="inline-block w-5 h-5 mr-1 -mt-1 text-purple-500"></i> Page ${currentCard.page}: ${currentCard.topic}`;
+            lucide.createIcons(); // 更新 icon
+            // 更新下拉選單中的高亮
+            populateDropdown();
+        }
+
+        // =========================================
+        // 6. 語音朗讀功能 (Web Speech API)
+        // =========================================
+        function speak(text) {
+            if (isAlphabetReading) {
+                // 如果正在朗讀 A-Z，則停止它
+                stopAlphabetReading();
+            }
+
+            // 停止任何正在播放的語音
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function handleSpeakButtonClick() {
+            const currentCard = flashcards[currentCardIndex];
+            const textToSpeak = currentCard.tts_en || currentCard.en;
+            speak(textToSpeak);
+        }
+
+        // =========================================
+        // 7. A-Z 字母朗讀功能
+        // =========================================
+        function startAlphabetReading() {
+            if (isAlphabetReading) return; // 防止重複啟動
+
+            isAlphabetReading = true;
+            isAlphabetPaused = false;
+            alphabetIndex = 0; // 從 A 開始
+
+            // 更新 UI
+            alphabetStartBtn.style.display = 'none';
+            alphabetControls.style.display = 'flex';
+            pauseBtnText.textContent = '暫停';
+
+            // 禁用頁面切換
+            disableNavigation(true);
+
+            // 開始朗讀循環
+            speakNextLetter();
+        }
+
+        function speakNextLetter() {
+            if (!isAlphabetReading) return; // 已被停止
+            if (isAlphabetPaused) return; // 已被暫停
+
+            if (alphabetIndex >= alphabet.length) {
+                // 朗讀完畢
+                stopAlphabetReading();
+                return;
+            }
+
+            const letter = alphabet[alphabetIndex];
+            
+            // *** 修正：直接在第四頁更新卡片內容 ***
+            englishText.textContent = letter;
+            chineseText.textContent = letter.toLowerCase();
+            // 強制設定為字母卡樣式
+            englishText.className = 'card-text-jumbo text-center break-words max-w-full';
+            chineseText.className = 'card-text-jumbo font-bold text-center break-words max-w-full';
+            // 確保卡片是正面
+            if (isFlipped) {
+                card.classList.remove('is-flipped');
+                isFlipped = false;
+            }
+            // *** 修正結束 ***
+
+            alphabetUtterance = new SpeechSynthesisUtterance(letter);
+            alphabetUtterance.lang = 'en-US';
+            alphabetUtterance.rate = 0.8;
+            
+            alphabetUtterance.onend = () => {
+                // 朗讀結束後，等待一小段時間再念下一個
+                setTimeout(() => {
+                    alphabetIndex++;
+                    speakNextLetter();
+                }, 500); // 字母間隔 0.5 秒
+            };
+
+            alphabetUtterance.onerror = (e) => {
+                console.error("SpeechSynthesis Error:", e);
+                stopAlphabetReading(); // 發生錯誤時停止
+            };
+
+            window.speechSynthesis.speak(alphabetUtterance);
+        }
+
+        function pauseAlphabetReading() {
+            if (!isAlphabetReading) return;
+
+            isAlphabetPaused = !isAlphabetPaused; // 切換暫停狀態
+
+            if (isAlphabetPaused) {
+                // 暫停
+                window.speechSynthesis.pause();
+                pauseBtnText.textContent = '繼續';
+                // *** 修正：暫停時允許切換頁面 ***
+                disableNavigation(false); 
+            } else {
+                // 繼續
+                pauseBtnText.textContent = '暫停';
+                // *** 修正：繼續時禁止切換頁面 ***
+                disableNavigation(true); 
+                // 檢查是否是從暫停狀態恢復
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                } else {
+                    // 如果不是，表示 onend 回調已停止，需手動啟動下一個
+                    speakNextLetter();
+                }
+            }
+        }
+
+        function stopAlphabetReading() {
+            isAlphabetReading = false;
+            isAlphabetPaused = false;
+            alphabetIndex = 0;
+            
+            if (alphabetUtterance) {
+                alphabetUtterance.onend = null; // 移除回調防止錯誤
+                alphabetUtterance = null;
+            }
+            window.speechSynthesis.cancel(); // 停止所有語音
+
+            // 恢復 UI
+            alphabetStartBtn.style.display = 'block';
+            alphabetControls.style.display = 'none';
+            pauseBtnText.textContent = '暫停';
+
+            // 啟用頁面切換
+            disableNavigation(false);
+
+            // 恢復 Page 4 的原始卡片內容
+            if (currentPage === 4) {
+                updateCardContent();
+            }
+        }
+        
+        // 輔助函數：禁用/啟用導覽
+        function disableNavigation(disabled) {
+            prevBtn.disabled = disabled;
+            nextBtn.disabled = disabled;
+            dropdownButton.disabled = disabled;
+
+            // *** 修正：只有在非暫停狀態下才鎖定 ***
+            if (isAlphabetPaused) {
+                 prevBtn.disabled = false;
+                 nextBtn.disabled = false;
+                 dropdownButton.disabled = false;
+            }
+        }
+        
+        // =========================================
+        // 8. 事件監聽器
+        // =========================================
+        
+        // 翻轉
+        card.addEventListener('click', () => {
+            const currentCard = flashcards[currentCardIndex];
+            // 修正：僅在A-Z朗讀中不翻轉，一般的字母卡(P5-12)應該要能翻轉
+            if (isAlphabetReading) return; 
+            
+            isFlipped = !isFlipped;
+            card.classList.toggle('is-flipped');
+        });
+        flipBtn.addEventListener('click', (e) => {
+             e.stopPropagation(); // 防止觸發卡片點擊
+             isFlipped = !isFlipped;
+             card.classList.toggle('is-flipped');
+        });
+
+        // 朗讀
+        speakBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止觸發卡片點擊
+            handleSpeakButtonClick();
+        });
+
+        // 切換卡片
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isAlphabetReading) stopAlphabetReading(); // 如果在A-Z朗讀中按了，就停止
+            changeCard(-1);
+        });
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isAlphabetReading) stopAlphabetReading(); // 如果在A-Z朗讀中按了，就停止
+            changeCard(1);
+        });
+
+        // 下拉選單
+        dropdownButton.addEventListener('click', () => toggleDropdown());
+        dropdownOverlay.addEventListener('click', () => toggleDropdown(false));
+
+        // A-Z 朗讀
+        alphabetStartBtn.addEventListener('click', startAlphabetReading);
+        alphabetPauseBtn.addEventListener('click', pauseAlphabetReading);
+        alphabetStopBtn.addEventListener('click', stopAlphabetReading);
+
+        // AI 例句
+        sentenceBtn.addEventListener('click', onClickSentenceButton);
+
+        // 鍵盤左右鍵
+        document.addEventListener('keydown', (e) => {
+            if (isDropdownOpen) return; // 下拉選單開啟時不觸發
+            
+            if (e.key === 'ArrowLeft') {
+                if (isAlphabetReading) stopAlphabetReading();
+                changeCard(-1);
+            } else if (e.key === 'ArrowRight') {
+                if (isAlphabetReading) stopAlphabetReading();
+                changeCard(1);
+            }
+        });
+
+        // =========================================
+        // 9. 初始化
+        // =========================================
+        function init() {
+            // 預設載入 Page 1
+            navigateToPage(1);
+        }
+
+        // 頁面載入完成後執行
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
