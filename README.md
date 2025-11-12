@@ -621,7 +621,7 @@
             { en: "Try again.", zh: "再試一次。", page: 36, topic: "課室英語(三）", isSentence: true },
             { en: "Good job!", zh: "做得好!", page: 36, topic: "課室英語(三）", isSentence: true },
             { en: "Sit properly.", zh: "老師: 坐好。", page: 36, topic: "課室英語(三）", isSentence: true },
-            { en: "Sit properly.", zh: "學生: 坐好。", page: 36, topic: "課室英語(三）", isSentence: true },
+            { en: "Sit properly.", zh: "學生: T: 坐好。", page: 36, topic: "課室英語(三）", isSentence: true },
             { en: "Quiet, please.", zh: "老師: 請安靜。", page: 36, topic: "課室英語(三）", isSentence: true },
             
             // Page 37: 課室英語(四）
@@ -865,11 +865,11 @@
         function localSentenceTemplate(word, pos) {
           // 處理片語或句子 (例如 Good morning)
           if (pos === 'phrase' || pos === 'sentence') {
-            return `"${word}" 是一個很棒的句子！`;
+            // 修正：移除中文，提供通用英文回應
+            return `"${word}" is a great sentence!`;
           }
 
-          // 0. 特殊動詞處理 (修正邏輯錯誤)
-          // 這些動詞不適用 "I can ${w}" 或 "I like to ${w}" 模板
+          // 0. 特殊動詞處理 (中文已移除)
           const specialVerbs = {
             // Page 31
             'am': ["I am a student.", "I am happy."],
@@ -877,6 +877,8 @@
             'close': ["Close the door.", "Close your book."],
             'come': ["Come here, please.", "Come in."],
             'cut': ["I cut the paper.", "She can cut the apple."],
+            'warm': ["It is warm.", "The tea is warm."], // 修正：warm 是形容詞
+            'windy': ["It is windy.", "What a windy day!"], // 修正：windy 是形容詞
             // Page 32
             'get up': ["I get up at 7.", "He gets up early."],
             'has': ["He has a book.", "She has a pen."],
@@ -890,47 +892,48 @@
             'open': ["Open the book.", "I open the door."], // 修正：加入 open
             'see': ["I see a bird.", "I see a pen.", "Can you see me?"] // 修正：加入 see
           };
-
-          // *** 修正：移除此處多餘的程式碼 ***
           
-          // 1. 詞性模板
+          // 1. 詞性模板 (移除中文)
           const templates = {
             'noun': [
-              (w) => `I have ${getArticle(w)} ${w}. (我有${getArticle(w)} ${w}。)`,
-              (w) => `I see ${getArticle(w)} ${w}. (我看到${getArticle(w)} ${w}。)`,
-              (w) => `It is ${getArticle(w)} ${w}. (它是${getArticle(w)} ${w}。)`,
-              (w) => `I like this ${w}. (我喜歡這個${w}。)`,
-              (w) => `Look at the ${w}. (看那個${w}。)`
+              (w) => `I have ${getArticle(w)} ${w}.`,
+              (w) => `I see ${getArticle(w)} ${w}.`,
+              (w) => `It is ${getArticle(w)} ${w}.`,
+              (w) => `I like this ${w}.`,
+              (w) => `Look at the ${w}.`
             ],
             'verb': [
-              (w) => `I can ${w}. (我會${w}。)`,
-              (w) => `Let's ${w}. (我們來${w}吧。)`,
-              (w) => `I like to ${w}. (我喜歡${w}。)`
+              (w) => `I can ${w}.`,
+              (w) => `Let's ${w}.`,
+              (w) => `I like to ${w}.`
             ],
             'adj': [
               // 修正：移除 "He is", "She is", "The cat is" 等不安全的模板
-              (w) => `It is ${w}. (它是${w}的。)`,
-              (w) => `Look, it is ${w}! (看，它是${w}的！)`,
-              (w) => `That is ${w}. (那是${w}的。)`,
-              (w) => `It looks ${w}. (它看起來${w}。)`,
-              (w) => `This is ${w}. (這是${w}的。)`
+              (w) => `It is ${w}.`,
+              (w) => `Look, it is ${w}!`,
+              (w) => `That is ${w}.`,
+              (w) => `It looks ${w}.`,
+              (w) => `This is ${w}.`
             ],
             'color': [ // Page 26, 27 專用
               (w) => {
                 const nouns = ['hat', 'pen', 'book', 'cat', 'bag']; // 隨機名詞
                 const noun = nouns[Math.floor(Math.random() * nouns.length)];
-                return `I have ${getArticle(w)} ${w} ${noun}. (我有${getArticle(w)} ${w}的${noun}。)`;
+                // 修正：移除中文
+                return `I have ${getArticle(w)} ${w} ${noun}.`;
               },
-              (w) => `It is ${w}. (它是${w}色的。)`,
-              (w) => `My book is ${w}. (我的書是${w}色的。)`,
-              (w) => `I like ${w}. (我喜歡${w}色。)`
+              // 修正：移除中文
+              (w) => `It is ${w}.`,
+              (w) => `My book is ${w}.`,
+              (w) => `I like ${w}.`
             ]
           };
 
           // 2. 選擇模板 (如果不是特殊動詞)
           let pool;
           // 檢查是否為特殊動詞
-          if (pos === 'verb' && specialVerbs[word]) {
+          // 修正：P31 的 warm/windy 也會在這裡被攔截
+          if (specialVerbs[word]) {
              pool = specialVerbs[word].map(sentence => () => sentence); // 轉換為函數
           } else if (pos === 'noun' && (word === 'black' || word === 'blue' || word === 'brown' || word === 'color' || word === 'green' || word === 'orange' || word === 'pink' || word === 'purple' || word === 'red' || word === 'white' || word === 'yellow')) {
              pool = templates['color'];
@@ -947,12 +950,7 @@
           // 4. 讓句首保持大寫
           sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
           
-          // 5. 處理 Page 31 的 'warm' 和 'windy' (形容詞被誤判)
-          if (word === 'warm' || word === 'windy') {
-             const adjTemplates = templates['adj'];
-             const adjFunc = adjTemplates[Math.floor(Math.random() * adjTemplates.length)];
-             sentence = adjFunc(word).charAt(0).toUpperCase() + adjFunc(word).slice(1);
-          }
+          // 5. 移除 Page 31 的 'warm' 和 'windy' 檢查 (已在 specialVerbs 處理)
           
           return sentence;
         }
@@ -980,7 +978,9 @@
             const currentCard = flashcards[currentCardIndex];
             
             // 檢查是否禁止AI
-            if (currentCard.noGemini) {
+            // 修正：34-39頁不需要造句
+            const isSentencePage = currentPage >= 34 && currentPage <= 39;
+            if (currentCard.noGemini || isSentencePage) {
                 sentenceBox.innerText = '這個頁面沒有例句喔！';
                 btn.disabled = false;
                 return;
@@ -991,7 +991,7 @@
             const word = (currentCard.tts_en || currentCard.en).split('\n')[0]; 
             // 修正：Page 26/27 傳遞 'color' 詞性
             let pos;
-            if (currentCard.page === 26 || currentCard.page === 27) {
+            if ((currentCard.page === 26 || currentCard.page === 27) && (word.toLowerCase() !== 'kitchen' && word.toLowerCase() !== 'library' && word.toLowerCase() !== 'living room' && word.toLowerCase() !== 'park' && word.toLowerCase() !== 'school' && word.toLowerCase() !== 'store' && word.toLowerCase() !== 'supermarket')) {
                 pos = 'color';
             } else {
                 pos = getPartOfSpeechFromTopic(currentCard.topic);
@@ -1061,7 +1061,9 @@
             }
 
             // 6. 更新 AI 例句區塊
-            if (currentCard.noGemini) {
+            // 修正：34-39頁不需要造句
+            const isSentencePage = currentPage >= 34 && currentPage <= 39;
+            if (currentCard.noGemini || isSentencePage) {
                 sentenceContainer.style.display = 'none';
             } else {
                 sentenceContainer.style.display = 'block';
@@ -1084,7 +1086,7 @@
         // =========================================
         // 6. 語音朗讀功能 (Web Speech API)
         // =========================================
-        function speak(text) {
+        function speak(text, lang = 'en-US') { // 1. 加入 lang 參數
             if (isAlphabetReading) {
                 // 如果正在朗讀 A-Z，則停止它
                 stopAlphabetReading();
@@ -1094,15 +1096,34 @@
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
+            utterance.lang = lang; // 2. 使用傳入的 lang
+            // 3. 針對不同語言微調語速
+            utterance.rate = (lang === 'zh-TW') ? 0.8 : 0.9;
             window.speechSynthesis.speak(utterance);
         }
 
         function handleSpeakButtonClick() {
             const currentCard = flashcards[currentCardIndex];
-            const textToSpeak = currentCard.tts_en || currentCard.en;
-            speak(textToSpeak);
+            
+            let textToSpeak;
+            let langToSpeak;
+
+            if (isFlipped) {
+                // 卡片已翻轉 (顯示中文)
+                // 朗讀中文 (取第一行，並移除 "老師: " 等標記)
+                textToSpeak = currentCard.zh.split('\n')[0]
+                                  .replace(/老師: /g, '')
+                                  .replace(/學生: /g, '')
+                                  .replace(/T: /g, '');
+                langToSpeak = 'zh-TW';
+            } else {
+                // 卡片在正面 (顯示英文)
+                // 朗讀英文 (優先使用 tts_en，否則取第一行)
+                textToSpeak = currentCard.tts_en || currentCard.en.split('\n')[0];
+                langToSpeak = 'en-US';
+            }
+            
+            speak(textToSpeak, langToSpeak);
         }
 
         // =========================================
@@ -1110,6 +1131,9 @@
         // =========================================
         function startAlphabetReading() {
             if (isAlphabetReading) return; // 防止重複啟動
+
+            // 修正：在開始前清除任何殘留的語音
+            window.speechSynthesis.cancel();
 
             isAlphabetReading = true;
             isAlphabetPaused = false;
@@ -1165,7 +1189,8 @@
             };
 
             alphabetUtterance.onerror = (e) => {
-                console.error("SpeechSynthesis Error:", e);
+                // 修正：提供更詳細的錯誤日誌
+                console.error("SpeechSynthesis Error:", e.error, e);
                 stopAlphabetReading(); // 發生錯誤時停止
             };
 
